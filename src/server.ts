@@ -1,14 +1,7 @@
-import express from "express";
-import {router} from "./routes"
+import { app } from './app'
 
-const app = express()
+const PORT = process.env.PORT || 3333
 
-app.use(express.json())
-app.use(router)
-
-app.listen(3333, () => {
-    console.log("Server Ativo");
-})
-    console.log("Server Ativo");
-    
+app.listen(PORT, () => {
+    console.log(`🚀 Server running on port ${PORT}`)
 })
