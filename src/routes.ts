@@ -1,9 +1,12 @@
 import {Router, Response, Request} from 'express'
 
+import { CreateUserController } from './controllers/user/CreateUserController'
+import { AuthUserController } from './controllers/user/AuthUserControlle'
+
 const router = Router()
 
-router.get("/test",(req:Request,res:Response)=>{
-    return res.json({message: "API is working!"})
-})
+/* rotas user */
+router.post("/users", new CreateUserController().handle)
 
-export  {router}
+router.post("/session", new AuthUserController().handle)
+export { router }
