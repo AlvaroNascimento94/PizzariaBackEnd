@@ -11,7 +11,8 @@ import { CreateProductController } from "./controllers/product/CreateProductCont
 
 import uploadconfig from "./config/multer";
 import multer from "multer";
-import { ListByCatergoryController } from "./controllers/product/ListbyCategoryController";
+import { ListByCatergoryController } from "./controllers/product/ListByCategoryController";
+import { CreateOrderController } from "./controllers/order/CreateOrderController";
 
 const router = Router();
 
@@ -33,4 +34,6 @@ router.post("/createProduct", isAuthenticated, upload.single('file'), new Create
 
 router.get("/category/product", isAuthenticated, new ListByCatergoryController().handle)
 
+/* rotas de order */
+router.post("/newpedido", isAuthenticated, new CreateOrderController().handle)
 export { router };
