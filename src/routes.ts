@@ -15,6 +15,7 @@ import { ListByCatergoryController } from "./controllers/product/ListByCategoryC
 import { CreateOrderController } from "./controllers/order/CreateOrderController";
 import { DeleteOrderController } from "./controllers/order/DeleteOrderConstroller";
 import { AddItemController } from "./controllers/order/AddItemController";
+import { DeleteItemController } from "./controllers/order/DeleteItemController";
 
 const router = Router();
 
@@ -37,9 +38,11 @@ router.post("/createProduct", isAuthenticated, upload.single('file'), new Create
 router.get("/category/product", isAuthenticated, new ListByCatergoryController().handle)
 
 /* rotas de order */
-router.post("/newpedido", isAuthenticated, new CreateOrderController().handle)
+router.post("/order", isAuthenticated, new CreateOrderController().handle)
 
-router.delete("/remove", isAuthenticated, new DeleteOrderController().handle)
+router.delete("/order", isAuthenticated, new DeleteOrderController().handle)
 
-router.post("/newpedido/add", isAuthenticated, new AddItemController().handle)
+router.post("/order/add", isAuthenticated, new AddItemController().handle)
+
+router.delete("/order/delete", isAuthenticated, new DeleteItemController().handle)
 export { router };
