@@ -13,6 +13,7 @@ import uploadconfig from "./config/multer";
 import multer from "multer";
 import { ListByCatergoryController } from "./controllers/product/ListByCategoryController";
 import { CreateOrderController } from "./controllers/order/CreateOrderController";
+import { DeleteOrderController } from "./controllers/order/DeleteOrderConstroller";
 
 const router = Router();
 
@@ -36,4 +37,6 @@ router.get("/category/product", isAuthenticated, new ListByCatergoryController()
 
 /* rotas de order */
 router.post("/newpedido", isAuthenticated, new CreateOrderController().handle)
+
+router.delete("/remove", isAuthenticated, new DeleteOrderController().handle)
 export { router };

@@ -1,11 +1,19 @@
 import prismaClient from "../../prisma";
 
-interface
-
-class DeleteOrderService{
-    async execute(){
-
-    }
+interface IOrder {
+  id: string;
 }
 
-export{DeleteOrderService}
+class DeleteOrderService {
+  async execute({ id }: IOrder) {
+    const order = await prismaClient.order.delete({
+        where:{
+            id
+        }
+    })
+
+    return order
+  }
+}
+
+export { DeleteOrderService };
