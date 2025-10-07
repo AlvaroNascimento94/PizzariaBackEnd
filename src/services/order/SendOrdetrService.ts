@@ -6,6 +6,15 @@ interface ISendOrder {
 
 class SendOrderService {
   async execute({ id }: ISendOrder) {
+
+    const orderSend = await prismaClient.order.findFirst({
+      where:{
+        id
+      }
+    }) 
+
+    if(orderSend.draft == false) throw new Error("Pedido ja enviado")
+
     const order = await prismaClient.order.update({
       where: {
         id,
