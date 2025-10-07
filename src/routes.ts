@@ -14,6 +14,7 @@ import multer from "multer";
 import { ListByCatergoryController } from "./controllers/product/ListByCategoryController";
 import { CreateOrderController } from "./controllers/order/CreateOrderController";
 import { DeleteOrderController } from "./controllers/order/DeleteOrderConstroller";
+import { AddItemController } from "./controllers/order/AddItemController";
 
 const router = Router();
 
@@ -39,4 +40,6 @@ router.get("/category/product", isAuthenticated, new ListByCatergoryController()
 router.post("/newpedido", isAuthenticated, new CreateOrderController().handle)
 
 router.delete("/remove", isAuthenticated, new DeleteOrderController().handle)
+
+router.post("/newpedido/add", isAuthenticated, new AddItemController().handle)
 export { router };
