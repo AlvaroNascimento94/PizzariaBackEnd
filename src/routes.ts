@@ -1,4 +1,6 @@
 import { Router, Response, Request } from "express";
+import multer from "multer";
+import uploadconfig from "./config/multer";
 
 import { CreateUserController } from "./controllers/user/CreateUserController";
 import { AuthUserController } from "./controllers/user/AuthUserControlle";
@@ -9,11 +11,15 @@ import { CreateCategoryController } from "./controllers/categorry/CreateCategory
 import { ListCategoryController } from "./controllers/categorry/ListCategoryController";
 import { CreateProductController } from "./controllers/product/CreateProductController";
 
-import uploadconfig from "./config/multer";
-import multer from "multer";
 import { ListByCatergoryController } from "./controllers/product/ListByCategoryController";
 import { CreateOrderController } from "./controllers/order/CreateOrderController";
 import { DeleteOrderController } from "./controllers/order/DeleteOrderConstroller";
+import { AddItemController } from "./controllers/order/AddItemController";
+import { DeleteItemController } from "./controllers/order/DeleteItemController";
+import { SendOrderController } from "./controllers/order/SendOrderController";
+import { ListOrdersController } from "./controllers/order/ListOrdersController";
+import { DetailOrderController } from "./controllers/order/DetailOrderController";
+import { FinishOrderController } from "./controllers/order/FinishOrderController";
 
 const router = Router();
 
@@ -36,7 +42,19 @@ router.post("/createProduct", isAuthenticated, upload.single('file'), new Create
 router.get("/category/product", isAuthenticated, new ListByCatergoryController().handle)
 
 /* rotas de order */
-router.post("/newpedido", isAuthenticated, new CreateOrderController().handle)
+router.post("/order", isAuthenticated, new CreateOrderController().handle)
 
-router.delete("/remove", isAuthenticated, new DeleteOrderController().handle)
+router.delete("/order", isAuthenticated, new DeleteOrderController().handle)
+
+router.post("/order/add", isAuthenticated, new AddItemController().handle)
+
+router.delete("/order/delete", isAuthenticated, new DeleteItemController().handle)
+
+router.put("/order/send", isAuthenticated, new SendOrderController().handle)
+
+router.get("/orders", isAuthenticated, new ListOrdersController().handle)
+
+router.get("/order/detail", isAuthenticated, new DetailOrderController().handle)
+
+router.put("/order/finish", isAuthenticated, new FinishOrderController().handle)
 export { router };

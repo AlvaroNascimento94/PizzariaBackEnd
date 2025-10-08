@@ -162,3 +162,5 @@ yarn-error.log*
 .idea/
 .DS_Store
 /src/generated/prisma
+.editorconfig
+/tmp
