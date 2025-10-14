@@ -5,8 +5,6 @@ class DetailUserControler{
     async handle(req:Request, res:Response){
 
         const user_id = req.user_id
-        console.log(user_id);
-        
 
         const detailUserService = new DetailUserService();
 
