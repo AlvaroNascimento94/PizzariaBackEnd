@@ -2,16 +2,35 @@ import prismaClient from "../../prisma";
 
 class DetailUserService {
   async execute(user_id: string) {
-    const user = await prismaClient.user.findFirst({
+    if (!user_id || !user_id.trim()) {
+      throw new Error("User ID is required");
+    }
+
+    const user = await prismaClient.user.findUnique({
       where: {
         id: user_id,
       },
-      select:{
-        id:true,
+      select: {
+        id: true,
         name: true,
-        email: true
-      }
-    }); 
+        email: true,
+        banner: true,
+        active: true,
+        createdAt: true,
+        updatedAt: true,
+        accessProfile: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
     return user;
   }
 }
