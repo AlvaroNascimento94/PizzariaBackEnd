@@ -3,12 +3,17 @@ import { FinishOrderService } from "../../services/order/FinishOrderService";
 
 class FinishOrderController {
   async handle(req: Request, res: Response) {
+    const { orderId } = req.body;
+    const userId = req.userId;
+
     const finishService = new FinishOrderService();
-    const { id } = req.body;
 
-    const order = await finishService.execute({ id });
+    const order = await finishService.execute({ 
+      orderId,
+      userUpdateId: userId,
+    });
 
-    return res.json(order)
+    return res.json(order);
   }
 }
 
