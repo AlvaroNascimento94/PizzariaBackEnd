@@ -19,7 +19,7 @@ export function isAuthenticated(
   try {
     const { sub } = verify(token, process.env.SECRET_JWT) as Payload;
 
-    req.user_id = sub;
+    req.userId = sub; 
 
     return next();
   } catch (error) {
