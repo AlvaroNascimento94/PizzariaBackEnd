@@ -21,6 +21,7 @@ class CreateProductController {
         description,
         banner,
         categoryId,
+        userCreateId: req.userId,
       });
       return res.json(product);
     }
