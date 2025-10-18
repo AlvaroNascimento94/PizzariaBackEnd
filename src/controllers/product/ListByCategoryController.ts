@@ -3,10 +3,10 @@ import { ListByCatergoryService } from "../../services/product/ListByCategorySer
 
 class ListByCatergoryController {
   async handle(req: Request, res: Response) {
-    const listByCategory = new ListByCatergoryService();
-    const categoryId  = req.query.categoryId as string;
 
-    const list = await listByCategory.execute( {categoryId} );
+    const listByCategory = new ListByCatergoryService();
+
+    const list = await listByCategory.execute( );
 
     return res.json(list);
   }
