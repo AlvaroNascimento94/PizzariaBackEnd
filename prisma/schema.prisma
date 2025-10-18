@@ -19,63 +19,199 @@ model User {
   name      String
   email     String    @unique
   password  String
+  banner    String?
+  active    Boolean   @default(true)
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
+
+  accessProfile   AccessProfile @relation(fields: [accessProfileId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  accessProfileId String
+
+  orders Order[] @relation("WaiterOrders")
 
   @@map("users")
 }
 
-model Category {
+model AccessProfile {
   id        String    @id @default(uuid())
   name      String
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
-  products  Product[]
+
+  users       User[]
+  permissions AccessProfilePermission[]
+
+  @@map("access_profiles")
+}
+
+model Permission {
+  id        String    @id @default(uuid())
+  name      String
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+
+  accessProfiles AccessProfilePermission[]
+
+  @@map("permissions")
+}
+
+model AccessProfilePermission {
+  accessProfileId String
+  permissionId    String
+  systemOptionId  String
+  createdAt       DateTime? @default(now())
+  updatedAt       DateTime? @default(now())
+
+  accessProfile AccessProfile @relation(fields: [accessProfileId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  permission    Permission    @relation(fields: [permissionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  systemOption  SystemOption  @relation(fields: [systemOptionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([accessProfileId, permissionId, systemOptionId])
+  @@map("access_profile_permissions")
+}
+
+model SystemOption {
+  id             String    @id @default(uuid())
+  name           String
+  parentOptionId String?
+  createdAt      DateTime? @default(now())
+  updatedAt      DateTime? @default(now())
+
+  parentOption SystemOption?  @relation("SystemOptionHierarchy", fields: [parentOptionId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  childOptions SystemOption[] @relation("SystemOptionHierarchy")
+
+  accessProfilePermissions AccessProfilePermission[]
+
+  @@map("system_options")
+}
+
+model Category {
+  id          String    @id @default(uuid())
+  name        String
+  description String?
+  color       String?
+  icon        String?
+  createdAt   DateTime? @default(now())
+  updatedAt   DateTime? @default(now())
+  products    Product[]
 
   @@map("categories")
 }
 
 model Product {
-  id          String    @id @default(uuid())
-  name        String
-  description String
-  price       Float
-  banner      String
-  createdAt   DateTime? @default(now())
-  updatedAt   DateTime? @default(now())
+  id           String    @id @default(uuid())
+  categoryId   String
+  name         String
+  description  String
+  price        Float
+  banner       String
+  status       Boolean   @default(true)
 
-  category   Category @relation(fields: [categoryId], references: [id])
-  categoryId String
-  items      Item[]
+  userCreateId String
+  userUpdateId String
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @default(now())
+
+  category      Category       @relation(fields: [categoryId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  orderProducts OrderProduct[]
 
   @@map("products")
 }
 
 model Order {
-  id        String    @id @default(uuid())
-  table     Int
-  status    Boolean   @default(false)
-  draft     Boolean   @default(true)
-  createdAt DateTime? @default(now())
-  updatedAt DateTime? @default(now())
-  name      String?
+  id            String  @id @default(uuid())
+  tableId       String
+  orderStatusId String
+  waiterId      String?
+  draft         Boolean @default(true)
+  price         Float   @default(0)
 
-  items Item[]
+  createdAt    DateTime? @default(now())
+  updatedAt    DateTime? @default(now())
+  userCreateId String
+  userUpdateId String
+
+  waiter      User?       @relation("WaiterOrders", fields: [waiterId], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  tables      Table       @relation(fields: [tableId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  orderStatus OrderStatus @relation(fields: [orderStatusId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  orderProducts OrderProduct[]
+  payments      Payment[]
 
   @@map("orders")
 }
 
-model Item {
+model OrderStatus {
+  id   String @id @default(uuid())
+  name String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+  order     Order[]
+
+  @@map("order_status")
+}
+
+model Table {
+  id        String   @id @default(uuid())
+  name      String
+  available Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now())
+  order     Order[]
+
+  @@map("tables")
+}
+
+model OrderProduct {
   id        String    @id @default(uuid())
-  amount    Int
+  orderId   String
+  productId String
+  quantity  Int
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
 
-  order   Order  @relation(fields: [orderId], references: [id])
-  orderId String
+  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
-  product   Product @relation(fields: [productId], references: [id])
-  productId String
+  @@map("order_products")
+}
 
-  @@map("items")
+model PaymentType {
+  id   String @id @default(uuid())
+  name String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+  payments  Payment[]
+
+  @@map("payment_types")
+}
+
+model PaymentStatus {
+  id   String @id @default(uuid())
+  name String
+
+  createdAt DateTime? @default(now())
+  updatedAt DateTime? @default(now())
+  payments  Payment[]
+
+  @@map("payment_statuses")
+}
+
+model Payment {
+  id              String @id @default(uuid())
+  orderId         String
+  paymentTypeId   String
+  paymentStatusId String
+  amount          Float
+
+  createdAt DateTime  @default(now())
+  updatedAt DateTime? @default(now())
+
+  order         Order         @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  paymentType   PaymentType   @relation(fields: [paymentTypeId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  paymentStatus PaymentStatus @relation(fields: [paymentStatusId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@map("payments")
 }

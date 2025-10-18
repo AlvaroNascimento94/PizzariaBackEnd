@@ -2,9 +2,10 @@
   // Visit https://aka.ms/tsconfig to read more about this file
   "compilerOptions": {
     "lib": ["es2024", "ESNext.Array", "ESNext.Collection", "ESNext.Iterator"],
+    "types": ["node"],
     "module": "nodenext",
     "target": "es2022",
-    "typeRoots": ["./src/@types"],
+    "typeRoots": ["./node_modules/@types", "./src/@types"],
     "strict": false,
     "esModuleInterop": true,
     "skipLibCheck": true,
