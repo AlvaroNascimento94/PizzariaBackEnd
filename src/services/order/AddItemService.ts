@@ -3,40 +3,64 @@ import prismaClient from "../../prisma";
 interface IAddItem {
   orderId: string;
   productId: string;
-  amount: number;
+  quantity: number;
 }
 
 class AddItemService {
-  async execute({ orderId, productId, amount }: IAddItem) {
-    const existingItem = await prismaClient.item.findFirst({
+  async execute({ orderId, productId, quantity }: IAddItem) {
+
+    const order = await prismaClient.order.findUnique({
+      where: { id: orderId },
+    });
+
+    if (!order) {
+      throw new Error("Pedido não encontrado");
+    }
+
+    const product = await prismaClient.product.findUnique({
+      where: { id: productId },
+    });
+
+    if (!product) {
+      throw new Error("Produto não encontrado");
+    }
+
+    const existingItem = await prismaClient.orderProduct.findFirst({
       where: {
         orderId: orderId,
         productId: productId,
       },
     });
 
-    let order;
+    let orderProduct;
 
     if (existingItem) {
-      order = await prismaClient.item.update({
+      orderProduct = await prismaClient.orderProduct.update({
         where: {
           id: existingItem.id,
         },
         data: {
-          amount: existingItem.amount + amount,
+          quantity: existingItem.quantity + quantity,
+        },
+        include: {
+          product: true,
         },
       });
     } else {
-      order = await prismaClient.item.create({
+
+      orderProduct = await prismaClient.orderProduct.create({
         data: {
           orderId,
           productId,
-          amount,
+          quantity,
+        },
+        include: {
+          product: true,
         },
       });
     }
 
-    return order;
+    return orderProduct;
   }
 }
 export { AddItemService };
