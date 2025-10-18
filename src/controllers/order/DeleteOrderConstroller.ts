@@ -1,15 +1,16 @@
 import { Response, Request } from "express";
 import { DeleteOrderService } from "../../services/order/DeleteOrderService";
 
-class DeleteOrderController{
-async handle(req:Request, res:Response){
-    const id = req.query.orderId as string
+class DeleteOrderController {
+  async handle(req: Request, res: Response) {
+    const orderId = req.query.orderId as string;
 
     const orderService = new DeleteOrderService();
 
-    const order = await orderService.execute({id});
+    const order = await orderService.execute({ orderId });
 
-    return res.json(order)
+    return res.json(order);
+  }
 }
-}
-export {DeleteOrderController}
+
+export { DeleteOrderController };
