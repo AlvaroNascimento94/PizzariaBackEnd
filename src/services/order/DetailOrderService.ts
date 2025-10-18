@@ -6,21 +6,36 @@ interface IDetailOrder {
 
 class DetailOrderService {
   async execute({ id }: IDetailOrder) {
-    const orders = await prismaClient.item.findMany({
+
+    const order = await prismaClient.order.findUnique({
       where: {
-        orderId: id,
+        id,
       },
-      include:{
-        product:true,
-        order: true
-      }
+      include: {
+        orderProducts: {
+          include: {
+            product: true,
+          },
+        },
+        tables: true,
+        orderStatus: true,
+        waiter: {
+          select: {
+            name: true,
+          },
+        },
+      },
     });
-    
-    if(!orders || orders.length === 0) {
-      throw new Error("Não existem itens para esta mesa/pedido");
+
+    if (!order) {
+      throw new Error("Pedido não encontrado");
     }
-    
-    return orders;
+
+    if (!order.orderProducts || order.orderProducts.length === 0) {
+      throw new Error("Este pedido não possui itens");
+    }
+
+    return order;
   }
 }
 
