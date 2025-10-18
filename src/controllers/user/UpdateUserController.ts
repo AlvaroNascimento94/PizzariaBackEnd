@@ -4,7 +4,10 @@ import { UpdateUserService } from "../../services/user/UpdateUserService";
 class UpdateUserController {
   async handle(req: Request, res: Response) {
     const { userId } = req.params; 
-    const { name, email, password, banner, accessProfileId, active } = req.body;
+    const { name, email, password, accessProfileId, active } = req.body;
+
+    // Pega o nome do arquivo de imagem (se foi enviado)
+    const banner = req.file?.filename;
 
     const updateUserService = new UpdateUserService();
 

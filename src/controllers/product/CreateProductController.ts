@@ -7,7 +7,6 @@ class CreateProductController {
 
     const { name, price, description, categoryId } = req.body;
 
-    // Converter price de string para número
     const priceNumber = parseFloat(price);
 
     if (!req.file) {

@@ -11,17 +11,21 @@ import { GetUserPermissionsController } from "../controllers/user/GetUserPermiss
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { checkPermission } from "../middlewares/checkPermission";
 
-const userRoutes = Router();
+import multer from "multer";
+import uploadconfig from "../config/multer";
 
-userRoutes.post("/users", new CreateUserController().handle);
+const userRoutes = Router();
+const upload = multer(uploadconfig.upload("./tmp"));
+
+userRoutes.post("/users", upload.single("file"), new CreateUserController().handle);
 
 userRoutes.post("/session", new AuthUserController().handle);
 
 userRoutes.get("/me/permissions", isAuthenticated, new GetUserPermissionsController().handle);
-userRoutes.put("/me", isAuthenticated, new UpdateMyProfileController().handle); 
+userRoutes.put("/me", isAuthenticated, upload.single("file"), new UpdateMyProfileController().handle); 
 userRoutes.get("/users", isAuthenticated, checkPermission('Users', 'READ'), new ListUsersController().handle);
 userRoutes.get("/user/:userId", isAuthenticated, checkPermission('Users', 'READ'), new DetailUserControler().handle);
-userRoutes.put("/user/:userId", isAuthenticated, checkPermission('Users', 'UPDATE'), new UpdateUserController().handle); 
+userRoutes.put("/user/:userId", isAuthenticated, checkPermission('Users', 'UPDATE'), upload.single("file"), new UpdateUserController().handle); 
 userRoutes.delete("/user/:userId", isAuthenticated, checkPermission('Users', 'DELETE'), new DeleteUserController().handle);
 
 userRoutes.get("/access-profiles", new ListAccessProfileController().handle);

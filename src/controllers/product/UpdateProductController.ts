@@ -3,8 +3,12 @@ import { UpdateProductService } from "../../services/product/UpdateProductServic
 
 class UpdateProductController {
   async handle(req: Request, res: Response) {
-    const { productId, name, price, description, status } = req.body;
+    const { name, price, description, status } = req.body;
+    const { productId } = req.params as { productId: string };
     const userId = req.userId;
+
+    // Pega o nome do arquivo de imagem (se foi enviado)
+    const banner = req.file?.filename;
 
     const updateProductService = new UpdateProductService();
 
@@ -13,6 +17,7 @@ class UpdateProductController {
       name,
       price: price ? parseFloat(price) : undefined,
       description,
+      banner,
       status: status !== undefined ? status === true || status === 'true' : undefined,
       userUpdateId: userId,
     });

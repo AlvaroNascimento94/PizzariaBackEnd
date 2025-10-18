@@ -27,9 +27,10 @@ productRoutes.get(
 );
 
 productRoutes.put(
-  "/product",
+  "/product/:productId",
   isAuthenticated,
   checkPermission('Products', 'UPDATE'),
+  upload.single('file'),
   new UpdateProductController().handle
 );
 

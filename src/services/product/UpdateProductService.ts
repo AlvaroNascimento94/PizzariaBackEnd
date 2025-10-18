@@ -5,6 +5,7 @@ interface IUpdateProduct {
   name?: string;
   price?: number;
   description?: string;
+  banner?: string;
   status?: boolean;
   userUpdateId: string;
 }
@@ -15,6 +16,7 @@ class UpdateProductService {
     name,
     price,
     description,
+    banner,
     status,
     userUpdateId,
   }: IUpdateProduct) {
@@ -53,6 +55,10 @@ class UpdateProductService {
 
     if (description !== undefined) {
       dataToUpdate.description = description.trim();
+    }
+
+    if (banner !== undefined) {
+      dataToUpdate.banner = banner;
     }
 
     if (status !== undefined) {

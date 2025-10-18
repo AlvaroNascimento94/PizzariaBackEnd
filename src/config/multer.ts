@@ -1,7 +1,6 @@
 import crypto from "crypto";
 import multer from "multer";
-
-import {resolve } from "path";
+import { resolve } from "path";
 
 export default {
   upload(folder: string) {
@@ -15,6 +14,23 @@ export default {
           return callback(null, fileName);
         },
       }),
+
+      // Filtra apenas imagens
+      fileFilter: (request: any, file: any, callback: any) => {
+        const allowedMimes = [
+          "image/jpeg",
+          "image/jpg",
+          "image/png",
+          "image/gif",
+          "image/webp",
+        ];
+
+        if (allowedMimes.includes(file.mimetype)) {
+          callback(null, true);
+        } else {
+          callback(new Error("Tipo de arquivo inválido. Apenas imagens são permitidas."));
+        }
+      },
     };
   },
 };
