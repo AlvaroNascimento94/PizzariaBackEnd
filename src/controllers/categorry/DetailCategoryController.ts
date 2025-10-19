@@ -3,12 +3,12 @@ import { DetailCategoryService } from "../../services/catergory/DetailCategorySe
 
 class DetailCategoryController {
   async handle(req: Request, res: Response) {
-    const { categoryId } = req.query;
+    const { categoryId } = req.params;
 
     const detailCategoryService = new DetailCategoryService();
 
     const category = await detailCategoryService.execute({
-      categoryId: categoryId as string,
+      categoryId: categoryId ,
     });
 
     return res.json(category);

@@ -4,7 +4,7 @@ import { UpdateCategoryService } from "../../services/catergory/UpdateCategorySe
 class UpdateCategoryController {
   async handle(req: Request, res: Response) {
     const { name, description, color, icon } = req.body;
-    const { categoryId } = req.query as { categoryId: string };
+    const { categoryId } = req.params;
 
     const updateCategoryService = new UpdateCategoryService();
 

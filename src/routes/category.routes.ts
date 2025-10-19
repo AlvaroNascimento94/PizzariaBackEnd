@@ -23,14 +23,14 @@ categoryRoutes.get(
 );
 
 categoryRoutes.get(
-  "/category/detail",
+  "/category/detail/:categoryId",
   isAuthenticated,
   checkPermission('Categories', 'READ'),
   new DetailCategoryController().handle
 );
 
 categoryRoutes.put(
-  "/category/detail",
+  "/category/:categoryId",
   isAuthenticated,
   checkPermission('Categories', 'UPDATE'),
   new UpdateCategoryController().handle
