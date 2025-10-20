@@ -17,7 +17,7 @@ import uploadconfig from "../config/multer";
 const userRoutes = Router();
 const upload = multer(uploadconfig.upload("./tmp"));
 
-userRoutes.post("/users", upload.single("file"), new CreateUserController().handle);
+userRoutes.post("/user", upload.single("file"), new CreateUserController().handle);
 
 userRoutes.post("/session", new AuthUserController().handle);
 
