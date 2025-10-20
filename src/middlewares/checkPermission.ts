@@ -17,6 +17,13 @@ export function checkPermission(systemOption: string, permission: 'CREATE' | 'RE
         });
       }
 
+      const requestedUserId = req.params.userId;
+      const isSelfProfile = requestedUserId && requestedUserId === userId;
+      
+      if (isSelfProfile && (permission === 'READ' || permission === 'UPDATE')) {
+        return next();
+      }
+
       const user = await prismaClient.user.findUnique({
         where: { id: userId },
         include: {
@@ -31,9 +38,7 @@ export function checkPermission(systemOption: string, permission: 'CREATE' | 'RE
             }
           }
         }
-      });
-
-      if (!user) {
+      });      if (!user) {
         return res.status(404).json({ 
           error: 'Usuário não encontrado' 
         });
