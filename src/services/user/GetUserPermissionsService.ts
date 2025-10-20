@@ -13,6 +13,7 @@ class GetUserPermissionsService {
         id: true,
         name: true,
         email: true,
+        banner: true,
         active: true,
         accessProfile: {
           select: {
@@ -61,6 +62,7 @@ class GetUserPermissionsService {
         id: user.id,
         name: user.name,
         email: user.email,
+        banner: user.banner,
         active: user.active,
       },
       profile: {
