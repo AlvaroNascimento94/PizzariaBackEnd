@@ -8,10 +8,11 @@ interface IUser {
   banner?: string;
   accessProfileId: string;
   active?: boolean;
+  phone: string;
 }
 
 class CreateUserService {
-  async execute({ name, email, password, banner, accessProfileId, active = true }: IUser) {
+  async execute({ name, email, password, banner, accessProfileId, active = true, phone }: IUser) {
 
     if (!email || !email.trim()) {
       throw new Error("Email is required");
@@ -55,6 +56,7 @@ class CreateUserService {
         banner: banner || null,
         accessProfileId,
         active,
+        phone
       },
       select: {
         id: true,

@@ -19,6 +19,7 @@ class ListUsersService {
         banner: true,
         active: true,
         createdAt: true,
+        phone: true,
         updatedAt: true,
         accessProfile: {
           select: {

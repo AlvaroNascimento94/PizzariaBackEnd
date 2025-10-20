@@ -4,7 +4,7 @@ import { UpdateUserService } from "../../services/user/UpdateUserService";
 class UpdateMyProfileController {
   async handle(req: Request, res: Response) {
     const userId = req.userId;
-    const { name, email, password } = req.body;
+    const { name, email, password, phone } = req.body;
 
     const banner = req.file?.filename;
 
@@ -16,6 +16,7 @@ class UpdateMyProfileController {
       email,
       password,
       banner,
+      phone
     });
 
     return res.json(user);

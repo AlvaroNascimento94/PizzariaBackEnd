@@ -9,10 +9,11 @@ interface IUpdateUser {
   banner?: string;
   accessProfileId?: string;
   active?: boolean;
+  phone: string;
 }
 
 class UpdateUserService {
-  async execute({ userId, name, email, password, banner, accessProfileId, active }: IUpdateUser) {
+  async execute({ userId, name, email, password, banner, accessProfileId, active, phone }: IUpdateUser) {
     
     if (!userId) {
       throw new Error("User ID is required");
@@ -54,12 +55,18 @@ class UpdateUserService {
       dataToUpdate.email = email.trim().toLowerCase();
     }
 
-    // Atualiza a senha se fornecida
     if (password !== undefined) {
       if (password.length < 6) {
         throw new Error("Password must be at least 6 characters");
       }
       dataToUpdate.password = await hash(password, 16);
+    }
+
+    if( phone !== undefined) {
+      if (!phone.trim()) {
+        throw new Error("Phone cannot be empty");
+      }
+      dataToUpdate.phone = phone.trim();
     }
 
     if (banner !== undefined) {
@@ -97,6 +104,7 @@ class UpdateUserService {
         email: true,
         banner: true,
         active: true,
+        phone: true,
         createdAt: true,
         updatedAt: true,
         accessProfile: {

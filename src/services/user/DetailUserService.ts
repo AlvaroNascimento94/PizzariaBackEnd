@@ -16,6 +16,7 @@ class DetailUserService {
         email: true,
         banner: true,
         active: true,
+        phone: true,
         createdAt: true,
         updatedAt: true,
         accessProfile: {
