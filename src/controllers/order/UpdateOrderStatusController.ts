@@ -17,7 +17,7 @@ class UpdateOrderStatusController {
       });
     }
 
-    const validStatuses = ['Aguardando', 'Em Preparo', 'Pronto', 'Em Entrega', 'Cancelado'];
+    const validStatuses = ['Iniciado', 'Aguardando', 'Em Preparo', 'Pronto', 'Em Entrega', 'Finalizado', 'Cancelado'];
     if (!validStatuses.includes(statusName)) {
       return res.status(400).json({
         error: 'Status inválido',

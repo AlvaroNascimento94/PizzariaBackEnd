@@ -6,7 +6,6 @@ class UpdateUserController {
     const { userId } = req.params;
     const { name, email, password, accessProfileId, active, phone } = req.body;
 
-    // Pega o nome do arquivo de imagem (se foi enviado)
     const banner = req.file?.filename;
 
     const updateUserService = new UpdateUserService();
