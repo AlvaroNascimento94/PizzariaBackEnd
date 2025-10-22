@@ -1,5 +1,5 @@
 import prismaClient from "../../prisma";
-import { hash } from 'bcryptjs';
+import { hash } from "bcryptjs";
 
 interface IUser {
   name: string;
@@ -12,8 +12,15 @@ interface IUser {
 }
 
 class CreateUserService {
-  async execute({ name, email, password, banner, accessProfileId, active = true, phone }: IUser) {
-
+  async execute({
+    name,
+    email,
+    password,
+    banner,
+    accessProfileId,
+    active = true,
+    phone,
+  }: IUser) {
     if (!email || !email.trim()) {
       throw new Error("Email is required");
     }
@@ -56,13 +63,14 @@ class CreateUserService {
         banner: banner || null,
         accessProfileId,
         active,
-        phone
+        phone,
       },
       select: {
         id: true,
         name: true,
         email: true,
         banner: true,
+        phone: true,
         active: true,
         createdAt: true,
         accessProfile: {
