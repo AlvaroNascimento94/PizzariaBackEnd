@@ -2,7 +2,6 @@ import prismaClient from "../../prisma";
 
 class ListOrdersByTableService {
   async execute() {
-    // Busca todos os Orders que não estão Finalizados ou Cancelados
     const orders = await prismaClient.order.findMany({
       where: {
         orderStatus: {
@@ -26,7 +25,6 @@ class ListOrdersByTableService {
       }
     });
 
-    // Agrupa por mesa
     const groupedByTable = orders.reduce((acc: any, order) => {
       const tableId = order.tableId;
       
@@ -44,11 +42,9 @@ class ListOrdersByTableService {
 
       acc[tableId].orders.push(order);
       acc[tableId].totalPrice += order.price;
-      
-      // ✅ Coleta todos os OrderProducts da mesa
+    
       acc[tableId].allOrderProducts.push(...order.orderProducts);
 
-      // Mantém a data da ordem mais antiga
       if (new Date(order.createdAt) < new Date(acc[tableId].oldestOrderDate)) {
         acc[tableId].oldestOrderDate = order.createdAt;
       }
@@ -56,12 +52,10 @@ class ListOrdersByTableService {
       return acc;
     }, {});
 
-    // ✅ Calcula o status mais avançado baseado nos OrderProducts
     return Object.values(groupedByTable).map((group: any) => {
       let mostAdvancedStatus = 'Aguardando';
       let highestPriority = 0;
 
-      // ✅ Conta itens por status
       const itemsByStatus = {
         aguardando: 0,
         emPreparo: 0,
@@ -71,7 +65,6 @@ class ListOrdersByTableService {
         cancelado: 0
       };
 
-      // Percorre todos os OrderProducts da mesa
       group.allOrderProducts.forEach((item: any) => {
         const itemPriority = this.getStatusPriority(item.status.name);
         if (itemPriority > highestPriority) {
@@ -79,7 +72,6 @@ class ListOrdersByTableService {
           mostAdvancedStatus = item.status.name;
         }
 
-        // Conta por status
         const statusName = item.status.name;
         if (statusName === 'Aguardando') itemsByStatus.aguardando++;
         else if (statusName === 'Em Preparo') itemsByStatus.emPreparo++;
@@ -101,7 +93,6 @@ class ListOrdersByTableService {
         orders: group.orders
       };
     }).sort((a: any, b: any) => {
-      // ✅ Ordenação: Primeiro por prioridade de status (DESC), depois por nome da mesa (ASC)
       if (b.statusPriority !== a.statusPriority) {
         return b.statusPriority - a.statusPriority;
       }

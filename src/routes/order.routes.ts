@@ -93,7 +93,6 @@ orderRoutes.put(
   new UpdateOrderProductStatusController().handle
 );
 
-// ✅ Nova rota: Lista orders agrupados por mesa
 orderRoutes.get(
   "/orders-by-table", 
   isAuthenticated, 
