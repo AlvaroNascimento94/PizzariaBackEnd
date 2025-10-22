@@ -25,6 +25,15 @@ class AddItemService {
       throw new Error("Produto não encontrado");
     }
 
+    // ✅ Busca o status "Aguardando" para novos itens
+    const statusAguardando = await prismaClient.orderStatus.findFirst({
+      where: { name: "Aguardando" },
+    });
+
+    if (!statusAguardando) {
+      throw new Error("Status 'Aguardando' não encontrado. Execute o seed do banco.");
+    }
+
     const existingItem = await prismaClient.orderProduct.findFirst({
       where: {
         orderId: orderId,
@@ -53,9 +62,11 @@ class AddItemService {
           orderId,
           productId,
           quantity,
+          statusId: statusAguardando.id, // ✅ Define status inicial
         },
         include: {
           product: true,
+          status: true, // ✅ Inclui status na resposta
         },
       });
     }

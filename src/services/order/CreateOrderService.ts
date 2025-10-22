@@ -22,20 +22,17 @@ class CreateOrderService {
       throw new Error("Mesa não encontrada");
     }
 
-    if (!table.available) {
-      throw new Error("Mesa está ocupada");
-    }
-
-    const orderExist = await prismaClient.order.findFirst({
+    // ✅ Verifica se já existe pedido em aberto (não finalizado/cancelado) nesta mesa
+    const hasOpenOrders = await prismaClient.order.findFirst({
       where: {
         tableId,
-        draft: true,
+        orderStatus: {
+          name: {
+            notIn: ['Finalizado', 'Cancelado']
+          }
+        }
       },
     });
-
-    if (orderExist) {
-      throw new Error("Já existe um pedido em aberto para esta mesa");
-    }
 
     const statusAguardando = await prismaClient.orderStatus.findFirst({
       where: { name: "Aguardando" },
@@ -69,10 +66,13 @@ class CreateOrderService {
       }, 0);
 
       const order = await prismaClient.$transaction(async (prisma) => {
-        await prisma.table.update({
-          where: { id: tableId },
-          data: { available: false },
-        });
+        // ✅ Só marca mesa como ocupada se for o primeiro pedido
+        if (!hasOpenOrders) {
+          await prisma.table.update({
+            where: { id: tableId },
+            data: { available: false },
+          });
+        }
 
         const newOrder = await prisma.order.create({
           data: {
@@ -81,18 +81,19 @@ class CreateOrderService {
             waiterId: userCreateId,
             userCreateId,
             userUpdateId: userCreateId,
-            draft: true,
             price: totalPrice,
           },
         });
 
 
+        // ✅ Cria todos os itens de uma vez com status "Aguardando"
         await prisma.orderProduct.createMany({
           data: items.map(item => ({
             orderId: newOrder.id,
             productId: item.productId,
             quantity: item.quantity,
             description: item.description || null,
+            statusId: statusAguardando.id, // ✅ Define status do item
           })),
         });
 
@@ -123,10 +124,13 @@ class CreateOrderService {
     }
 
     const order = await prismaClient.$transaction(async (prisma) => {
-      await prisma.table.update({
-        where: { id: tableId },
-        data: { available: false },
-      });
+      // ✅ Só marca mesa como ocupada se for o primeiro pedido
+      if (!hasOpenOrders) {
+        await prisma.table.update({
+          where: { id: tableId },
+          data: { available: false },
+        });
+      }
 
       const newOrder = await prisma.order.create({
         data: {
@@ -135,7 +139,6 @@ class CreateOrderService {
           waiterId: userCreateId,
           userCreateId,
           userUpdateId: userCreateId,
-          draft: true,
           price: 0,
         },
         include: {
