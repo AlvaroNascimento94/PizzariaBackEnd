@@ -1,12 +1,19 @@
 import prismaClient from "../../prisma";
 
+interface IOrderItem {
+  productId: string;
+  quantity: number;
+  description?: string;
+}
+
 interface IOrder {
   tableId: string;
-  userCreateId: string; 
+  userCreateId: string;
+  items?: IOrderItem[];
 }
 
 class CreateOrderService {
-  async execute({ tableId, userCreateId }: IOrder) {
+  async execute({ tableId, userCreateId, items = [] }: IOrder) {
     const table = await prismaClient.table.findUnique({
       where: { id: tableId },
     });
@@ -45,11 +52,80 @@ class CreateOrderService {
     if (!waiter) {
       throw new Error("Garçom não encontrado");
     }
+    
+    if (items.length > 0) {
+      const productIds = items.map(item => item.productId);
+      const products = await prismaClient.product.findMany({
+        where: { id: { in: productIds } },
+      });
+
+      if (products.length !== productIds.length) {
+        throw new Error("Um ou mais produtos não foram encontrados");
+      }
+
+      const totalPrice = items.reduce((acc, item) => {
+        const product = products.find(p => p.id === item.productId);
+        return acc + (product ? parseFloat(product.price.toString()) * item.quantity : 0);
+      }, 0);
+
+      const order = await prismaClient.$transaction(async (prisma) => {
+        await prisma.table.update({
+          where: { id: tableId },
+          data: { available: false },
+        });
+
+        const newOrder = await prisma.order.create({
+          data: {
+            tableId,
+            orderStatusId: statusAguardando.id,
+            waiterId: userCreateId,
+            userCreateId,
+            userUpdateId: userCreateId,
+            draft: true,
+            price: totalPrice,
+          },
+        });
+
+
+        await prisma.orderProduct.createMany({
+          data: items.map(item => ({
+            orderId: newOrder.id,
+            productId: item.productId,
+            quantity: item.quantity,
+            description: item.description || null,
+          })),
+        });
+
+        const orderComplete = await prisma.order.findUnique({
+          where: { id: newOrder.id },
+          include: {
+            tables: true,
+            orderStatus: true,
+            waiter: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+              },
+            },
+            orderProducts: {
+              include: {
+                product: true,
+              },
+            },
+          },
+        });
+
+        return orderComplete;
+      });
+
+      return order;
+    }
 
     const order = await prismaClient.$transaction(async (prisma) => {
       await prisma.table.update({
         where: { id: tableId },
-        data: { available: false }, // ✅ Mesa ocupada
+        data: { available: false },
       });
 
       const newOrder = await prisma.order.create({
