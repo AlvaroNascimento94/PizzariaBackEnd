@@ -8,6 +8,8 @@ import { ListOrdersController } from "../controllers/order/ListOrdersController"
 import { DetailOrderController } from "../controllers/order/DetailOrderController";
 import { FinishOrderController } from "../controllers/order/FinishOrderController";
 import { UpdateOrderStatusController } from "../controllers/order/UpdateOrderStatusController";
+import { ListOrderProductsController } from "../controllers/order/ListOrderProductsController";
+import { UpdateOrderProductStatusController } from "../controllers/order/UpdateOrderProductStatusController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { checkPermission } from "../middlewares/checkPermission";
 
@@ -74,6 +76,20 @@ orderRoutes.put(
   isAuthenticated, 
   checkPermission('OrderStatus', 'UPDATE'),
   new UpdateOrderStatusController().handle
+);
+
+orderRoutes.get(
+  "/order-products", 
+  isAuthenticated, 
+  checkPermission('Orders', 'READ'),
+  new ListOrderProductsController().handle
+);
+
+orderRoutes.put(
+  "/order-product/status", 
+  isAuthenticated, 
+  checkPermission('OrderStatus', 'UPDATE'),
+  new UpdateOrderProductStatusController().handle
 );
 
 export { orderRoutes };
