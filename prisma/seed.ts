@@ -186,7 +186,7 @@ async function main() {
     { name: 'Aguardando' },
     { name: 'Em Preparo' },
     { name: 'Pronto' },
-    { name: 'Em Entrega' },
+    { name: 'Entregue' },
     { name: 'Finalizado' },
     { name: 'Cancelado' },
     { name: 'Iniciado' }

@@ -148,8 +148,9 @@ model OrderStatus {
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
-  order     Order[]
-
+  
+  orders        Order[]        @relation 
+  orderProducts OrderProduct[] @relation("OrderProductStatus")
   @@map("order_status")
 }
 
@@ -170,11 +171,13 @@ model OrderProduct {
   productId   String
   quantity    Int
   description String?
+  statusId    String    // ✅ Status individual do item
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @default(now())
 
-  order   Order   @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  product Product @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  order   Order       @relation(fields: [orderId], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  product Product     @relation(fields: [productId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  status  OrderStatus @relation("OrderProductStatus", fields: [statusId], references: [id], onDelete: Restrict, onUpdate: Cascade)
 
   @@map("order_products")
 }
