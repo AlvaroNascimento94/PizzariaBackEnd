@@ -189,7 +189,6 @@ async function main() {
     { name: 'Entregue' },
     { name: 'Finalizado' },
     { name: 'Cancelado' },
-    { name: 'Iniciado' }
   ];
 
   console.log('Criando status de pedidos...');

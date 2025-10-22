@@ -2,7 +2,7 @@ import prismaClient from "../../prisma";
 
 interface UpdateOrderStatusRequest {
   orderId: string;
-  statusName: 'Iniciado' | 'Aguardando' | 'Em Preparo' | 'Pronto' | 'Entregue' | 'Finalizado' | 'Cancelado';
+  statusName: 'Aguardando' | 'Em Preparo' | 'Pronto' | 'Entregue' | 'Finalizado' | 'Cancelado';
 }
 
 class UpdateOrderStatusService {
@@ -30,8 +30,7 @@ class UpdateOrderStatusService {
     const currentStatus = order.orderStatus.name;
 
     const validTransitions: Record<string, string[]> = {
-      'Aguardando': ['Iniciado', 'Cancelado'],
-      'Iniciado': ['Em Preparo', 'Cancelado'],
+      'Aguardando': ['Em Preparo', 'Cancelado'],
       'Em Preparo': ['Pronto', 'Cancelado'],
       'Pronto': ['Entregue', 'Cancelado'],
       'Entregue': ['Finalizado', 'Cancelado'],

@@ -5,7 +5,7 @@ class UpdateOrderProductStatusController {
   async handle(req: Request, res: Response) {
     const { orderProductId, statusName } = req.body as {
       orderProductId: string;
-      statusName: 'Iniciado' | 'Aguardando' | 'Em Preparo' | 'Pronto' | 'Entregue' | 'Finalizado' | 'Cancelado';
+      statusName: 'Aguardando' | 'Em Preparo' | 'Pronto' | 'Entregue' | 'Finalizado' | 'Cancelado';
     };
 
     if (!orderProductId || !statusName) {
