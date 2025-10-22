@@ -62,7 +62,6 @@ class UpdateOrderStatusService {
         }
       });
 
-      // ✅ Se finalizou ou cancelou, verifica se pode liberar a mesa
       if (statusName === 'Finalizado' || statusName === 'Cancelado') {
         const otherOrders = await prisma.order.findMany({
           where: {
@@ -76,7 +75,6 @@ class UpdateOrderStatusService {
           },
         });
 
-        // ✅ Só libera a mesa se NÃO houver outros pedidos em aberto
         if (otherOrders.length === 0) {
           await prisma.table.update({
             where: { id: order.tableId },

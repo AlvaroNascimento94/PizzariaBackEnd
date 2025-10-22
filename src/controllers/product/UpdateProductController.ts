@@ -7,7 +7,6 @@ class UpdateProductController {
     const { productId } = req.params as { productId: string };
     const userId = req.userId;
 
-    // Pega o nome do arquivo de imagem (se foi enviado)
     const banner = req.file?.filename;
 
     const updateProductService = new UpdateProductService();

@@ -30,7 +30,6 @@ class UpdateOrderProductStatusService {
 
     const currentStatus = orderProduct.status.name;
 
-    // ✅ Validação de transições válidas para itens individuais
     const validTransitions: Record<string, string[]> = {
       'Aguardando': ['Iniciado', 'Cancelado'],
       'Iniciado': ['Em Preparo', 'Cancelado'],
@@ -71,9 +70,7 @@ class UpdateOrderProductStatusService {
         }
       });
 
-      // ✅ Se finalizou ou cancelou o item, verifica se pode liberar a mesa
       if (statusName === 'Finalizado' || statusName === 'Cancelado') {
-        // Verifica se ainda há outros itens em aberto na mesma mesa
         const otherItems = await prisma.orderProduct.findMany({
           where: {
             order: {
@@ -88,7 +85,6 @@ class UpdateOrderProductStatusService {
           },
         });
 
-        // ✅ Só libera a mesa se NÃO houver outros itens em aberto
         if (otherItems.length === 0) {
           await prisma.table.update({
             where: { id: orderProduct.order.tableId },
