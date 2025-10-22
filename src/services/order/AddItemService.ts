@@ -4,10 +4,11 @@ interface IAddItem {
   orderId: string;
   productId: string;
   quantity: number;
+  description?: string;
 }
 
 class AddItemService {
-  async execute({ orderId, productId, quantity }: IAddItem) {
+  async execute({ orderId, productId, quantity, description }: IAddItem) {
 
     const order = await prismaClient.order.findUnique({
       where: { id: orderId },
@@ -25,7 +26,6 @@ class AddItemService {
       throw new Error("Produto não encontrado");
     }
 
-    // ✅ Busca o status "Aguardando" para novos itens
     const statusAguardando = await prismaClient.orderStatus.findFirst({
       where: { name: "Aguardando" },
     });
@@ -34,42 +34,19 @@ class AddItemService {
       throw new Error("Status 'Aguardando' não encontrado. Execute o seed do banco.");
     }
 
-    const existingItem = await prismaClient.orderProduct.findFirst({
-      where: {
-        orderId: orderId,
-        productId: productId,
+    const orderProduct = await prismaClient.orderProduct.create({
+      data: {
+        orderId,
+        productId,
+        quantity,
+        description,
+        statusId: statusAguardando.id,
+      },
+      include: {
+        product: true,
+        status: true,
       },
     });
-
-    let orderProduct;
-
-    if (existingItem) {
-      orderProduct = await prismaClient.orderProduct.update({
-        where: {
-          id: existingItem.id,
-        },
-        data: {
-          quantity: existingItem.quantity + quantity,
-        },
-        include: {
-          product: true,
-        },
-      });
-    } else {
-
-      orderProduct = await prismaClient.orderProduct.create({
-        data: {
-          orderId,
-          productId,
-          quantity,
-          statusId: statusAguardando.id, // ✅ Define status inicial
-        },
-        include: {
-          product: true,
-          status: true, // ✅ Inclui status na resposta
-        },
-      });
-    }
 
     return orderProduct;
   }
