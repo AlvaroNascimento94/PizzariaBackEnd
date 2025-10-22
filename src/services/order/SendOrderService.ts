@@ -34,9 +34,10 @@ class SendOrderService {
       return total + item.product.price * item.quantity;
     }, 0);
 
-    if (!order.draft) {
-      throw new Error("Este pedido já foi enviado para a cozinha");
-    }
+    // ⚠️ DEPRECATED: draft foi removido, pedidos vão direto para a cozinha
+    // if (!order.draft) {
+    //   throw new Error("Este pedido já foi enviado para a cozinha");
+    // }
 
     const statusIniciado = await prismaClient.orderStatus.findFirst({
       where: { name: "Iniciado" },
@@ -52,7 +53,6 @@ class SendOrderService {
       where: { id: orderId },
       data: {
         orderStatusId: statusIniciado.id,
-        draft: false,
         price: totalPrice,
         userUpdateId,
         updatedAt: new Date(Date.now()),

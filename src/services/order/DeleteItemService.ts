@@ -18,12 +18,6 @@ class DeleteItemService {
       throw new Error("Item não encontrado");
     }
 
-    if (!item.order.draft) {
-      throw new Error(
-        "Não é possível remover itens de um pedido já enviado para a cozinha"
-      );
-    }
-
     const deletedItem = await prismaClient.orderProduct.delete({
       where: {
         id: itemId,

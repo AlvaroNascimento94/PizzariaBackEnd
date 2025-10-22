@@ -20,12 +20,7 @@ class DeleteOrderService {
       throw new Error("Pedido não encontrado");
     }
 
-    if (!order.draft) {
-      throw new Error(
-        "Não é possível deletar um pedido já enviado para a cozinha. Apenas pedidos em rascunho podem ser removidos."
-      );
-    }
-
+    // ✅ Só pode deletar se não tiver pagamentos
     if (order.payments && order.payments.length > 0) {
       throw new Error(
         "Não é possível deletar um pedido que possui pagamentos registrados"
