@@ -2,7 +2,7 @@ import prismaClient from "../../prisma";
 
 interface UpdateOrderStatusRequest {
   orderId: string;
-  statusName: 'Iniciado' | 'Aguardando' | 'Em Preparo' | 'Pronto' | 'Em Entrega' | 'Finalizado' | 'Cancelado';
+  statusName: 'Iniciado' | 'Aguardando' | 'Em Preparo' | 'Pronto' | 'Entregue' | 'Finalizado' | 'Cancelado';
 }
 
 class UpdateOrderStatusService {
@@ -33,8 +33,8 @@ class UpdateOrderStatusService {
       'Aguardando': ['Iniciado', 'Cancelado'],
       'Iniciado': ['Em Preparo', 'Cancelado'],
       'Em Preparo': ['Pronto', 'Cancelado'],
-      'Pronto': ['Em Entrega', 'Cancelado'],
-      'Em Entrega': ['Finalizado', 'Cancelado'],
+      'Pronto': ['Entregue', 'Cancelado'],
+      'Entregue': ['Finalizado', 'Cancelado'],
       'Finalizado': [],
       'Cancelado': []
     };
@@ -45,20 +45,47 @@ class UpdateOrderStatusService {
       );
     }
 
-    const updatedOrder = await prismaClient.order.update({
-      where: { id: orderId },
-      data: {
-        orderStatusId: newStatus.id,
-      },
-      include: {
-        orderStatus: true,
-        tables: true,
-        orderProducts: {
-          include: {
-            product: true,
+    const updatedOrder = await prismaClient.$transaction(async (prisma) => {
+      const updated = await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          orderStatusId: newStatus.id,
+        },
+        include: {
+          orderStatus: true,
+          tables: true,
+          orderProducts: {
+            include: {
+              product: true,
+            }
           }
         }
+      });
+
+      // ✅ Se finalizou ou cancelou, verifica se pode liberar a mesa
+      if (statusName === 'Finalizado' || statusName === 'Cancelado') {
+        const otherOrders = await prisma.order.findMany({
+          where: {
+            tableId: order.tableId,
+            id: { not: orderId },
+            orderStatus: {
+              name: {
+                notIn: ['Finalizado', 'Cancelado']
+              }
+            }
+          },
+        });
+
+        // ✅ Só libera a mesa se NÃO houver outros pedidos em aberto
+        if (otherOrders.length === 0) {
+          await prisma.table.update({
+            where: { id: order.tableId },
+            data: { available: true },
+          });
+        }
       }
+
+      return updated;
     });
 
     return updatedOrder;

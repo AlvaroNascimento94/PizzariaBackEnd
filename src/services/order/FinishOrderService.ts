@@ -24,12 +24,6 @@ class FinishOrderService {
       throw new Error("Não é possível finalizar um pedido sem itens");
     }
 
-    if (order.draft) {
-      throw new Error(
-        "Não é possível finalizar um pedido em rascunho. Envie o pedido para a cozinha primeiro."
-      );
-    }
-
     const statusFinalizado = await prismaClient.orderStatus.findFirst({
       where: { name: "Finalizado" },
     });
@@ -75,10 +69,22 @@ class FinishOrderService {
         },
       });
 
-      await prisma.table.update({
-        where: { id: order.tableId },
-        data: { available: true },
+      // ✅ Verifica se ainda há outros pedidos em aberto na mesma mesa
+      const otherOrders = await prisma.order.findMany({
+        where: {
+          tableId: order.tableId,
+          id: { not: orderId },
+          orderStatusId: { not: statusFinalizado.id },
+        },
       });
+
+      // ✅ Só libera a mesa se NÃO houver outros pedidos em aberto
+      if (otherOrders.length === 0) {
+        await prisma.table.update({
+          where: { id: order.tableId },
+          data: { available: true },
+        });
+      }
 
       return updatedOrder;
     });
