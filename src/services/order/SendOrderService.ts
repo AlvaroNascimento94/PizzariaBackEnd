@@ -38,20 +38,20 @@ class SendOrderService {
       throw new Error("Este pedido já foi enviado para a cozinha");
     }
 
-    const statusEmPreparo = await prismaClient.orderStatus.findFirst({
-      where: { name: "Em Preparo" },
+    const statusIniciado = await prismaClient.orderStatus.findFirst({
+      where: { name: "Iniciado" },
     });
 
-    if (!statusEmPreparo) {
+    if (!statusIniciado) {
       throw new Error(
-        "Status 'Em Preparo' não encontrado. Execute o seed do banco."
+        "Status 'Iniciado' não encontrado. Execute o seed do banco."
       );
     }
 
     const orderUpdated = await prismaClient.order.update({
       where: { id: orderId },
       data: {
-        orderStatusId: statusEmPreparo.id,
+        orderStatusId: statusIniciado.id,
         draft: false,
         price: totalPrice,
         userUpdateId,
