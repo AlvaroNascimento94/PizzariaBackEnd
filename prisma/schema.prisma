@@ -124,7 +124,6 @@ model Order {
   tableId       String
   orderStatusId String
   waiterId      String?
-  draft         Boolean @default(true)
   price         Float   @default(0)
 
   createdAt    DateTime? @default(now())
