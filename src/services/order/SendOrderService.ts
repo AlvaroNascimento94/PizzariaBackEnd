@@ -34,11 +34,6 @@ class SendOrderService {
       return total + item.product.price * item.quantity;
     }, 0);
 
-    // ⚠️ DEPRECATED: draft foi removido, pedidos vão direto para a cozinha
-    // if (!order.draft) {
-    //   throw new Error("Este pedido já foi enviado para a cozinha");
-    // }
-
     const statusIniciado = await prismaClient.orderStatus.findFirst({
       where: { name: "Iniciado" },
     });

@@ -10,6 +10,7 @@ import { FinishOrderController } from "../controllers/order/FinishOrderControlle
 import { UpdateOrderStatusController } from "../controllers/order/UpdateOrderStatusController";
 import { ListOrderProductsController } from "../controllers/order/ListOrderProductsController";
 import { UpdateOrderProductStatusController } from "../controllers/order/UpdateOrderProductStatusController";
+import { ListOrdersByTableController } from "../controllers/order/ListOrdersByTableController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { checkPermission } from "../middlewares/checkPermission";
 
@@ -90,6 +91,14 @@ orderRoutes.put(
   isAuthenticated, 
   checkPermission('OrderStatus', 'UPDATE'),
   new UpdateOrderProductStatusController().handle
+);
+
+// ✅ Nova rota: Lista orders agrupados por mesa
+orderRoutes.get(
+  "/orders-by-table", 
+  isAuthenticated, 
+  checkPermission('Orders', 'READ'),
+  new ListOrdersByTableController().handle
 );
 
 export { orderRoutes };

@@ -20,7 +20,6 @@ class DeleteOrderService {
       throw new Error("Pedido não encontrado");
     }
 
-    // ✅ Só pode deletar se não tiver pagamentos
     if (order.payments && order.payments.length > 0) {
       throw new Error(
         "Não é possível deletar um pedido que possui pagamentos registrados"

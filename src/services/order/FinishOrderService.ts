@@ -69,7 +69,6 @@ class FinishOrderService {
         },
       });
 
-      // ✅ Verifica se ainda há outros pedidos em aberto na mesma mesa
       const otherOrders = await prisma.order.findMany({
         where: {
           tableId: order.tableId,
@@ -78,7 +77,6 @@ class FinishOrderService {
         },
       });
 
-      // ✅ Só libera a mesa se NÃO houver outros pedidos em aberto
       if (otherOrders.length === 0) {
         await prisma.table.update({
           where: { id: order.tableId },
