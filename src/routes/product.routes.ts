@@ -6,6 +6,7 @@ import { ListByCatergoryController } from "../controllers/product/ListByCategory
 import { UpdateProductController } from "../controllers/product/UpdateProductController";
 import { isAuthenticated } from "../middlewares/isAuthenticated";
 import { checkPermission } from "../middlewares/checkPermission";
+import { GetProductController } from "../controllers/product/GetProductController";
 
 const productRoutes = Router();
 
@@ -24,6 +25,13 @@ productRoutes.get(
   isAuthenticated,
   checkPermission('Products', 'READ'),
   new ListByCatergoryController().handle
+);
+
+productRoutes.get(
+  "/product/:productId",
+  isAuthenticated,
+  checkPermission('Products', 'READ'),
+  new GetProductController().handle
 );
 
 productRoutes.put(
