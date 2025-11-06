@@ -31,7 +31,7 @@ orderRoutes.get(
 );
 
 orderRoutes.get(
-  "/order/detail", 
+  "/order/detail/:id", 
   isAuthenticated, 
   checkPermission('Orders', 'READ'),
   new DetailOrderController().handle

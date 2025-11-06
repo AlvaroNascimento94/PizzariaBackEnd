@@ -3,7 +3,7 @@ import { DetailOrderService } from "../../services/order/DetailOrderService";
 
 class DetailOrderController {
   async handle(req: Request, res: Response) {
-    const id = req.query.orderId as string;
+    const { id } = req.params;
 
     const detailOrderService = new DetailOrderService();
     
