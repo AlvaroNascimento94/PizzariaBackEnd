@@ -13,12 +13,15 @@ class AuthUserService {
       where: { email: email },
     });
 
-    if (!user) throw new Error("User/passord incorrect");
+    if (!user) throw new Error("User/password incorrect");
 
+    if (!user.active) throw new Error("Usuário inativo. Contate o administrador.");
+    
     const passwordMatch = await compare(password, user.password);
 
-    if (!passwordMatch) throw new Error("User/passord incorrect");
+    if (!passwordMatch) throw new Error("User/password incorrect");
 
+    
     const token = sign(
       {
         name: user.name,
