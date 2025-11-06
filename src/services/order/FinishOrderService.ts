@@ -13,6 +13,7 @@ class FinishOrderService {
       include: {
         orderProducts: true,
         payments: true,
+        tables: true,
       },
     });
 
@@ -38,13 +39,45 @@ class FinishOrderService {
       throw new Error("Este pedido já está finalizado");
     }
 
+    const allTableOrders = await prismaClient.order.findMany({
+      where: {
+        tableId: order.tableId,
+        orderStatusId: { not: statusFinalizado.id },
+      },
+      include: {
+        orderProducts: true,
+      },
+    });
+
     const orderFinished = await prismaClient.$transaction(async (prisma) => {
-      const updatedOrder = await prisma.order.update({
+
+      for (const tableOrder of allTableOrders) {
+
+        await prisma.orderProduct.updateMany({
+          where: {
+            orderId: tableOrder.id,
+          },
+          data: {
+            statusId: statusFinalizado.id,
+          },
+        });
+
+        await prisma.order.update({
+          where: { id: tableOrder.id },
+          data: {
+            orderStatusId: statusFinalizado.id,
+            userUpdateId,
+          },
+        });
+      }
+
+      await prisma.table.update({
+        where: { id: order.tableId },
+        data: { available: true },
+      });
+
+      const updatedOrder = await prisma.order.findUnique({
         where: { id: orderId },
-        data: {
-          orderStatusId: statusFinalizado.id,
-          userUpdateId,
-        },
         include: {
           tables: true,
           orderStatus: true,
@@ -58,6 +91,7 @@ class FinishOrderService {
           orderProducts: {
             include: {
               product: true,
+              status: true,
             },
           },
           payments: {
@@ -68,21 +102,6 @@ class FinishOrderService {
           },
         },
       });
-
-      const otherOrders = await prisma.order.findMany({
-        where: {
-          tableId: order.tableId,
-          id: { not: orderId },
-          orderStatusId: { not: statusFinalizado.id },
-        },
-      });
-
-      if (otherOrders.length === 0) {
-        await prisma.table.update({
-          where: { id: order.tableId },
-          data: { available: true },
-        });
-      }
 
       return updatedOrder;
     });
