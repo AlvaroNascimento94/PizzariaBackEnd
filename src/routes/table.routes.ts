@@ -12,3 +12,4 @@ tableRoutes.get(
   checkPermission('Tables', 'READ'),
   new ListByTableController().handle
 );
+export{ tableRoutes }
