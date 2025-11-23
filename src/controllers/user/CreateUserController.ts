@@ -7,18 +7,21 @@ class CreateUserController {
 
     const banner = req.file?.filename;
 
+    // Converter active de string para boolean se necessário
+    const activeBoolean = active === "true" || active === true;
+
     const createUserService = new CreateUserService();
-    
-    const user = await createUserService.execute({ 
-      name, 
-      email, 
-      password, 
-      banner, 
+
+    const user = await createUserService.execute({
+      name,
+      email,
+      password,
+      banner,
       accessProfileId,
-      active,
-      phone
+      active: activeBoolean,
+      phone,
     });
-    
+
     return res.json(user);
   }
 }

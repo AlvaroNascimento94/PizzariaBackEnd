@@ -8,6 +8,10 @@ class UpdateUserController {
 
     const banner = req.file?.filename;
 
+    // Converter active de string para boolean se necessário
+    const activeBoolean =
+      active !== undefined ? active === "true" || active === true : undefined;
+
     const updateUserService = new UpdateUserService();
 
     const user = await updateUserService.execute({
@@ -17,7 +21,7 @@ class UpdateUserController {
       password,
       banner,
       accessProfileId,
-      active,
+      active: activeBoolean,
       phone,
     });
 
