@@ -99,7 +99,7 @@ model Product {
   name        String
   description String
   price       Float
-  banner      String
+  banner      String?
   status      Boolean @default(true)
 
   userCreateId String

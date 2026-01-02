@@ -8,22 +8,17 @@ class CreateProductController {
     const { name, price, description, categoryId } = req.body;
 
     const priceNumber = parseFloat(price);
+    const banner = req.file?.filename;
 
-    if (!req.file) {
-      throw new Error("Erro upload file");
-    } else {
-      const { originalname, filename: banner } = req.file;
-
-      const product = await productService.execute({
-        name,
-        price: priceNumber,
-        description,
-        banner,
-        categoryId,
-        userCreateId: req.userId,
-      });
-      return res.json(product);
-    }
+    const product = await productService.execute({
+      name,
+      price: priceNumber,
+      description,
+      banner,
+      categoryId,
+      userCreateId: req.userId,
+    });
+    return res.json(product);
   }
 }
 

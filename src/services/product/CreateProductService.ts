@@ -4,10 +4,10 @@ interface IProduct {
   name: string;
   price: number;
   description: string;
-  banner: string;
+  banner?: string;
   categoryId: string;
-  status?: boolean; 
-  userCreateId: string; 
+  status?: boolean;
+  userCreateId: string;
 }
 
 class CreateProductService {
@@ -20,7 +20,6 @@ class CreateProductService {
     status = true,
     userCreateId,
   }: IProduct) {
-
     if (!name || !name.trim()) {
       throw new Error("Nome do produto é obrigatório");
     }
@@ -31,10 +30,6 @@ class CreateProductService {
 
     if (!categoryId) {
       throw new Error("Categoria é obrigatória");
-    }
-
-    if (!banner || !banner.trim()) {
-      throw new Error("Banner (imagem) é obrigatório");
     }
 
     const category = await prismaClient.category.findUnique({
@@ -50,14 +45,13 @@ class CreateProductService {
         name: name.trim(),
         price,
         description: description?.trim() || "",
-        banner,
+        banner: banner || null,
         categoryId,
-        status, 
+        status,
         userCreateId,
-        userUpdateId: userCreateId, 
+        userUpdateId: userCreateId,
       },
-      include: {
-      },
+      include: {},
     });
 
     return product;
