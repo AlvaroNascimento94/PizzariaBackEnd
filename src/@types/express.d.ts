@@ -6,5 +6,6 @@ declare namespace Express {
       option: string;
       permission: string;
     }>;
+    file?: Express.Multer.File;
   }
 }
