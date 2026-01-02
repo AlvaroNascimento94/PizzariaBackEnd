@@ -7,7 +7,6 @@ class CreateUserController {
 
     const banner = req.file?.filename;
 
-    // Converter active de string para boolean se necessário
     const activeBoolean = active === "true" || active === true;
 
     const createUserService = new CreateUserService();

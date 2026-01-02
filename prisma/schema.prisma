@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
   output   = "../src/generated/prisma"
@@ -147,9 +141,10 @@ model OrderStatus {
 
   createdAt DateTime? @default(now())
   updatedAt DateTime? @default(now())
-  
-  orders        Order[]        @relation 
+
+  orders        Order[]        @relation
   orderProducts OrderProduct[] @relation("OrderProductStatus")
+
   @@map("order_status")
 }
 
@@ -170,7 +165,7 @@ model OrderProduct {
   productId   String
   quantity    Int
   description String?
-  statusId    String    // ✅ Status individual do item
+  statusId    String // ✅ Status individual do item
   createdAt   DateTime? @default(now())
   updatedAt   DateTime? @default(now())
 

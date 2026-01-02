@@ -15,7 +15,6 @@ export default {
         },
       }),
 
-      // Filtra apenas imagens
       fileFilter: (request: any, file: any, callback: any) => {
         const allowedMimes = [
           "image/jpeg",
@@ -28,7 +27,11 @@ export default {
         if (allowedMimes.includes(file.mimetype)) {
           callback(null, true);
         } else {
-          callback(new Error("Tipo de arquivo inválido. Apenas imagens são permitidas."));
+          callback(
+            new Error(
+              "Tipo de arquivo inválido. Apenas imagens são permitidas."
+            )
+          );
         }
       },
     };
