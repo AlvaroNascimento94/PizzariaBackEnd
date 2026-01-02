@@ -1,20 +1,28 @@
 import prismaClient from "../../prisma";
-import { hash } from 'bcryptjs';
+import { hash } from "bcryptjs";
 
 interface IUpdateUser {
   userId: string;
   name?: string;
   email?: string;
   password?: string;
-  banner?: string;
+  banner?: string | null;
   accessProfileId?: string;
   active?: boolean;
   phone: string;
 }
 
 class UpdateUserService {
-  async execute({ userId, name, email, password, banner, accessProfileId, active, phone }: IUpdateUser) {
-    
+  async execute({
+    userId,
+    name,
+    email,
+    password,
+    banner,
+    accessProfileId,
+    active,
+    phone,
+  }: IUpdateUser) {
     if (!userId) {
       throw new Error("User ID is required");
     }
@@ -62,7 +70,7 @@ class UpdateUserService {
       dataToUpdate.password = await hash(password, 16);
     }
 
-    if( phone !== undefined) {
+    if (phone !== undefined) {
       if (!phone.trim()) {
         throw new Error("Phone cannot be empty");
       }
@@ -70,7 +78,7 @@ class UpdateUserService {
     }
 
     if (banner !== undefined) {
-      dataToUpdate.banner = banner || null;
+      dataToUpdate.banner = banner;
     }
 
     if (accessProfileId !== undefined) {

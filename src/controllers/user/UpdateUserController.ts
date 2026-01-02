@@ -4,11 +4,23 @@ import { UpdateUserService } from "../../services/user/UpdateUserService";
 class UpdateUserController {
   async handle(req: Request, res: Response) {
     const { userId } = req.params;
-    const { name, email, password, accessProfileId, active, phone } = req.body;
+    const {
+      name,
+      email,
+      password,
+      accessProfileId,
+      active,
+      phone,
+      removeBanner,
+    } = req.body;
 
-    const banner = req.file?.filename;
+    let banner: string | null | undefined = undefined;
+    if (req.file) {
+      banner = req.file.filename;
+    } else if (removeBanner === "true") {
+      banner = null;
+    }
 
-    // Converter active de string para boolean se necessário
     const activeBoolean =
       active !== undefined ? active === "true" || active === true : undefined;
 

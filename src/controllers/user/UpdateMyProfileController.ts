@@ -4,9 +4,14 @@ import { UpdateUserService } from "../../services/user/UpdateUserService";
 class UpdateMyProfileController {
   async handle(req: Request, res: Response) {
     const userId = req.userId;
-    const { name, email, password, phone } = req.body;
+    const { name, email, password, phone, removeBanner } = req.body;
 
-    const banner = req.file?.filename;
+    let banner: string | null | undefined = undefined;
+    if (req.file) {
+      banner = req.file.filename;
+    } else if (removeBanner === "true") {
+      banner = null;
+    }
 
     const updateUserService = new UpdateUserService();
 
@@ -16,7 +21,7 @@ class UpdateMyProfileController {
       email,
       password,
       banner,
-      phone
+      phone,
     });
 
     return res.json(user);
